@@ -23,11 +23,10 @@ class Deck:
 # builds deck
         for s in self.suit:
             for r in self.rank:
-                self.deck.append(Card(r, s))
+                self.deck.append(Card(s, r))
 # shuffle deck
         random.shuffle(self.deck)
 # draw card def statement
-
     def drawCard(self):
         drawnCard = self.deck.pop()
         return drawnCard
@@ -56,51 +55,51 @@ class PlayerOne:
 # request a card as long as you name a card in your hand
     def request(self):
         while True:
-            request = input("What rank would you like to ask for?\n")
+            requestCard = input("What rank would you like to ask for?\n")
             choice = []
             for card in self.hand:
-                if card.rank == request:
+                if card.rank == requestCard:
                     choice.append(card.rank)
                     break
             if len(choice) == 0:
                 print("You can only ask for cards in your hand. Please try again.")
             else:
                 break
-        return request
+        return requestCard
 # turn method checks if cards are in hand, then uses request to ask computer for card
 # if you ask for the right card the computer hands it over, otherwise you draw a card
     def turn(self):
 
         self.showHand()
+        checkMatch(self.hand)
 
         if len(self.hand) != 0:
             request = self.request()
             requested = []
 
-            for card in Computer().handComp:
-                if card.rank == request:
-                    requested.append(card)
+            for y in Computer().handComp:
+                if y.rank == request:
+                    requested.append(y)
 
-            for card in requested:
-                self.hand.append(card)
-                Computer().handComp.remove(card)
-                print("Computer gave you " + card.__str__(card) + ".")
+            for x in requested:
+                self.hand.append(x)
+                Computer().handComp.remove(x)
+                print("Computer gave you " + Card.__str__(x) + ".")
 
             if len(requested) == 0:
                 print("Go Fish!")
-                Deck().drawCard()
-                self.showHand()
+                card = Deck().drawCard()
+                self.hand.append(card)
 
             if checkMatch(self.hand):
                 self.score += 1
-                self.showHand()
-                checkForWin()
 
         if len(Deck().deck) != 0 and len(self.hand) == 0:
             card = Deck().drawCard()
             self.hand.append(card)
 
-#computer class, initializes the computer hand
+# computer class, initializes the computer hand
+
 class Computer:
     def __init__(self):
         self.name = 'Computer'
@@ -121,6 +120,8 @@ class Computer:
     def comp_turn(self):
         random.shuffle(self.handComp)
         guess = 1
+
+        checkMatch(self.handComp)
 
         if len(self.handComp) == 0 and len(Deck().deck) != 0:
             self.handComp.append(Deck().drawCard())
@@ -153,7 +154,7 @@ class Computer:
 
             if checkMatch(self.handComp):
                 self.score += 1
-                checkForWin()
+
 
 # checks for pairs of cards in hands
 def checkMatch(hand):
